@@ -1,30 +1,25 @@
 package lib.kg.newcleanarch.presentation.ui.fragments.music
 
-import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import lib.kg.newcleanarch.R
 import lib.kg.newcleanarch.databinding.FragmentMusicBinding
 import lib.kg.newcleanarch.domain.models.Music
 import lib.kg.newcleanarch.presentation.ui.base.BaseFragment
 import lib.kg.newcleanarch.presentation.ui.fragments.music.adapter.MusicAdapter
-import lib.kg.newcleanarch.presentation.utils.UiState
 
 @AndroidEntryPoint
-class MusicFragment : BaseFragment() {
-    private lateinit var binding: FragmentMusicBinding
+class MusicFragment : BaseFragment<FragmentMusicBinding>() {
     private val viewModel by viewModels<MusicViewModel>()
     private val adapter = MusicAdapter()
+    private var isSortPerfomer = false
+    private var isSortDuration = false
+    private var isSortDefault = true
 
     private fun adapterListener() {
         adapter.onItemClick = {
@@ -35,22 +30,20 @@ class MusicFragment : BaseFragment() {
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentMusicBinding.inflate(inflater, container, false)
-        return binding.root
+    override fun inflateBinding(
+        inflater: LayoutInflater,
+        container: ViewGroup?
+    ): FragmentMusicBinding {
+        return FragmentMusicBinding.inflate(layoutInflater)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        initOnClickListeners()
+    override fun uiBox() {
+        initListeners()
         viewModelListener()
         adapterListener()
     }
 
-    private fun initOnClickListeners() {
+    private fun initListeners() {
         with(binding) {
             btnSave.setOnClickListener {
                 viewModel.addMusic(
@@ -62,21 +55,49 @@ class MusicFragment : BaseFragment() {
                     )
                 )
             }
+            btnSortByDuration.setOnClickListener {
+                isSortDuration = true
+            }
         }
     }
 
     private fun viewModelListener() {
-        viewModel.getAllMusic()
+        viewModel.getMusicByDuration()
         viewModel.getAllMusicStates.collectState(
             {
-                binding.progressbar.isVisible = true
+                binding.progressbar.isVisible = false
             },
             {
                 binding.progressbar.isVisible = false
-                binding.rvMusic.adapter = adapter
                 adapter.addMusicList(it)
+                binding.rvMusic.adapter = adapter
             }
         )
+
+
+//        viewModel.getMusicByPerfomer()
+//        viewModel.getAllMusicStates.collectState(
+//            {
+//                binding.progressbar.isVisible = false
+//            },
+//            {
+//                binding.progressbar.isVisible = false
+//                adapter.addMusicList(it)
+//                binding.rvMusic.adapter = adapter
+//            }
+//        )
+//
+//        viewModel.getAllMusic()
+//        viewModel.getAllMusicStates.collectState(
+//            {
+//                binding.progressbar.isVisible = true
+//            },
+//            {
+//                binding.progressbar.isVisible = false
+//                adapter.addMusicList(it)
+//                binding.rvMusic.adapter = adapter
+//            }
+//        )
     }
 
     companion object {

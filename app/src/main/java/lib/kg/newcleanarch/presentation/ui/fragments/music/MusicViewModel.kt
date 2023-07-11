@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import lib.kg.newcleanarch.domain.models.Music
 import lib.kg.newcleanarch.domain.usecases.AddMusicUseCase
+import lib.kg.newcleanarch.domain.usecases.GetMusicByDurationUseCase
+import lib.kg.newcleanarch.domain.usecases.GetMusicByPerfomerUseCase
 import lib.kg.newcleanarch.domain.usecases.GetMusicUseCase
 import lib.kg.newcleanarch.presentation.base.BaseViewModel
 import lib.kg.newcleanarch.presentation.utils.UiState
@@ -16,6 +18,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MusicViewModel @Inject constructor(
     private val getMusicUseCase: GetMusicUseCase,
+    private val getMusicByPerfomerUseCase: GetMusicByPerfomerUseCase,
+    private val getMusicByDurationUseCase: GetMusicByDurationUseCase,
     private val addMusicUseCase: AddMusicUseCase,
 ) : BaseViewModel() {
 
@@ -29,4 +33,8 @@ class MusicViewModel @Inject constructor(
     }
 
     fun getAllMusic() = getMusicUseCase.execute().collectData(_getAllMusicState)
+
+    fun getMusicByPerfomer() = getMusicByPerfomerUseCase.execute().collectData(_getAllMusicState)
+
+    fun getMusicByDuration() = getMusicByDurationUseCase.execute().collectData(_getAllMusicState)
 }
